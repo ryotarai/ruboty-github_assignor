@@ -24,13 +24,15 @@ module Ruboty
           to = datum['to']
           assignor = Ruboty::GithubAssignor::Assignor.new(datum['assignees'])
 
-          Ruboty::GithubAssignor::RepoWatcher.new(
+          watcher = Ruboty::GithubAssignor::RepoWatcher.new(
             robot: robot,
             repo: repo,
             octokit: octokit,
             assignor: assignor,
             to: to,
-          ).start((ENV['GITHUB_ASSIGNOR_INTERVAL'] || 60).to_i)
+          )
+          GithubAssignor.log(watcher.inspect)
+          watcher.start((ENV['GITHUB_ASSIGNOR_INTERVAL'] || 60).to_i)
         end
       end
     end

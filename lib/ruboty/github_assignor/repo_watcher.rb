@@ -65,10 +65,7 @@ module Ruboty
       end
 
       def log(msg)
-        Ruboty.logger.info "[github_assignor][#{@repo}] #{msg}"
-
-        # FIX thix dirty hack.
-        Ruboty.logger.instance_variable_get(:@logdev).dev.flush
+        GithubAssignor.log("[#{@repo}] #{msg}")
       end
     end
   end
