@@ -31,7 +31,7 @@ module Ruboty
             assignor: assignor,
             to: to,
           )
-          GithubAssignor.log(watcher.inspect)
+          Ruboty::GithubAssignor.log(watcher.inspect)
           watcher.start((ENV['GITHUB_ASSIGNOR_INTERVAL'] || 60).to_i)
         end
       end
