@@ -7,20 +7,10 @@ module Ruboty
       env :GITHUB_TOKEN, "GitHub Access Token"
       env :GITHUB_ASSIGNOR_INTERVAL, "Check interval", optional: true
 
-      on(
-        /tell me github_assignor version/,
-        name: 'show_version',
-        description: 'Show version of github_assignor plugin',
-      )
-
       def initialize(*args)
         super
 
         start_watching
-      end
-
-      def show_version(message)
-        message.reply(Ruboty::GithubAssignor::VERSION)
       end
 
       private
