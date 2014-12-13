@@ -24,7 +24,8 @@ module Ruboty
         data.each do |datum|
           repo = datum['repo']
           to = datum['to']
-          assignor = Ruboty::GithubAssignor::Assignor.new(datum['assignees'])
+          assignees = Hash[datum['assignees'].map {|k, v| [k.to_sym, v] }]
+          assignor = Ruboty::GithubAssignor::Assignor.new(assignees)
 
           watcher = Ruboty::GithubAssignor::RepoWatcher.new(
             robot: robot,
@@ -33,7 +34,6 @@ module Ruboty
             assignor: assignor,
             to: to,
           )
-          Ruboty::GithubAssignor.log(watcher.inspect)
           watcher.start((ENV['GITHUB_ASSIGNOR_INTERVAL'] || 60).to_i)
         end
       end
