@@ -24,7 +24,7 @@ module Ruboty
         data.each do |datum|
           repo = datum['repo']
           to = datum['to']
-          assignees = Hash[datum['assignees'].map {|k, v| [k.to_sym, v] }]
+          assignees = datum['assignees'].map {|assignee| Hash[assignee.map {|k, v| [k.to_sym, v] }] }
           assignor = Ruboty::GithubAssignor::Assignor.new(assignees)
 
           watcher = Ruboty::GithubAssignor::RepoWatcher.new(
