@@ -19,6 +19,8 @@ module Ruboty
         octokit = Octokit::Client.new(access_token: ENV['GITHUB_TOKEN'])
 
         data = JSON.parse(ENV['GITHUB_ASSIGNOR_REPOS'])
+        Ruboty::GithubAssignor.log(data)
+
         data.each do |datum|
           repo = datum['repo']
           to = datum['to']
