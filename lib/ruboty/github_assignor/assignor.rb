@@ -7,6 +7,7 @@ module Ruboty
       attr_accessor :current
 
       def initialize(assignees)
+        @mutex = Mutex.new
         @assignees = assignees.map do |assignee|
           Assignee.new(*assignee.values_at(*Assignee.members))
         end
@@ -14,10 +15,12 @@ module Ruboty
       end
 
       def next
-        assignee = @assignees[@current % @assignees.size]
-        @current += 1
+        @mutex.synchronize do
+          assignee = @assignees[@current % @assignees.size]
+          @current += 1
 
-        assignee
+          assignee
+        end
       end
     end
   end
