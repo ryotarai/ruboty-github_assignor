@@ -49,7 +49,11 @@ module Ruboty
           log "Start watching issues"
           loop do
             sleep(interval)
-            check_issues
+            begin
+              check_issues
+            rescue => err
+              log err.inspect
+            end
           end
         end
       end
