@@ -18,9 +18,11 @@ module Ruboty
       def check_issues(assign = true)
         @octokit.issues(@repo).each do |issue|
           unless @checked_issue_ids.include?(issue[:id])
+            log "New issue found (#{issue[:id]} / #{issue[:title]})"
             if assign && !issue[:assignee]
               # assign this issue
               assignee = @assignor.next
+              log "Assign this issue to #{assignee}"
 
               @octokit.update_issue(@repo, issue[:number], assignee: assignee.github_name)
               say(<<-EOC)
@@ -37,6 +39,7 @@ module Ruboty
 
       def start(interval)
         Thread.start do
+          log "Start watching issues"
           loop do
             sleep(interval)
             check_issues
@@ -59,6 +62,10 @@ module Ruboty
           to: @to,
           original: {type: "groupchat"},
         )
+      end
+
+      def log(msg)
+        Ruboty.logger.info "[github_assignor][#{@repo}] #{msg}"
       end
     end
   end
