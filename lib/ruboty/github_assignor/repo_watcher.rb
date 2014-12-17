@@ -73,7 +73,8 @@ module Ruboty
       #   }
       # ]
       def find_message(issue)
-        including_mention = (/(^| )@\w+/ =~ issue[:body])
+        body = issue[:body] || ''
+        including_mention = (/(^| )@\w+/ =~ body)
 
         @messages.find do |message|
           message['conditions'].any? do |condition|
@@ -84,7 +85,7 @@ module Ruboty
             end
 
             including_all_keywords = condition['keywords'].all? do |keyword|
-              issue[:body].downcase.include?(keyword.downcase)
+              body.downcase.include?(keyword.downcase)
             end
 
             including_all_keywords
