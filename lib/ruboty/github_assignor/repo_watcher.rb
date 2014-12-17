@@ -3,12 +3,13 @@ require 'octokit'
 module Ruboty
   module GithubAssignor
     class RepoWatcher
-      def initialize(robot:, repo:, octokit:, assignor:, to:)
+      def initialize(robot:, repo:, octokit:, assignor:, to:, messages:)
         @robot = robot
         @repo = repo
         @octokit = octokit
         @assignor = assignor
         @to = to
+        @messages = messages
 
         @checked_issue_ids = []
 
@@ -21,7 +22,8 @@ module Ruboty
         @octokit.issues(@repo).each do |issue|
           unless @checked_issue_ids.include?(issue[:id])
             log "New issue found (#{issue[:id]} / #{issue[:title]})"
-            if assign && !issue[:assignee]
+            message = find_message(issue)
+            if message && assign && !issue[:assignee]
               # assign this issue
               assignee = @assignor.next
               log "Assigning this issue to #{assignee}..."
@@ -31,7 +33,7 @@ module Ruboty
 
               log "Reminding the user of the issue..."
               say(<<-EOC)
-@#{assignee.chat_name} さん、お願いします！
+@#{assignee.chat_name} さん、#{message['message']}お願いします！
 
 #{issue[:title]}
 <#{issue[:html_url]}>
@@ -59,6 +61,36 @@ module Ruboty
       end
 
       private
+
+      # messages
+      # [
+      #   {
+      #     "message": "レビュー",
+      #     "conditions": [{
+      #       "keywords": [...], # AND
+      #       "including_mention": true/false,
+      #     }],
+      #   }
+      # ]
+      def find_message(issue)
+        including_mention = (/(^| )@\w+/ =~ issue[:body])
+
+        @messages.find do |message|
+          message['conditions'].any? do |condition|
+            if condition.has_key?('including_mention') &&
+              (condition['including_mention'] && !including_mention ||
+               !condition['including_mention'] && including_mention)
+              next false
+            end
+
+            including_all_keywords = condition['keywords'].all? do |keyword|
+              issue[:body].downcase.include?(keyword.downcase)
+            end
+
+            including_all_keywords
+          end
+        end
+      end
 
       def say(body)
         from = if @robot.send(:adapter).respond_to?(:jid, true)

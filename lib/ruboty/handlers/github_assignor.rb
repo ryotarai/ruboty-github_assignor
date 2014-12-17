@@ -24,6 +24,7 @@ module Ruboty
         data.each do |datum|
           repo = datum['repo']
           to = datum['to']
+          messages = datum['messages'] || []
           assignees = datum['assignees'].map {|assignee| Hash[assignee.map {|k, v| [k.to_sym, v] }] }
           assignor = Ruboty::GithubAssignor::Assignor.new(assignees)
 
@@ -33,6 +34,7 @@ module Ruboty
             octokit: octokit,
             assignor: assignor,
             to: to,
+            messages: messages,
           )
           watcher.start((ENV['GITHUB_ASSIGNOR_INTERVAL'] || 60).to_i)
         end

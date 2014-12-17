@@ -1,3 +1,5 @@
+ENV.delete('OCTOKIT_API_ENDPOINT')
+
 require 'ruboty/github_assignor'
 require 'webmock/rspec'
 

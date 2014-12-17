@@ -17,6 +17,15 @@ describe Ruboty::GithubAssignor::RepoWatcher do
       octokit: octokit,
       assignor: assignor,
       to: 'room',
+      messages: [
+        {
+          'message' => 'レビュー',
+          'conditions' => [{
+            'including_mention' => false,
+            'keywords' => %w!please review!,
+          }],
+        },
+      ],
     )
   end
 
@@ -38,7 +47,7 @@ describe Ruboty::GithubAssignor::RepoWatcher do
 
       expect(robot).to receive(:say).with(
         hash_including(body: <<-EOC)
-@alice さん、お願いします！
+@alice さん、レビューお願いします！
 
 Found a bug
 <https://github.com/octocat/Hello-World/issues/1347>
