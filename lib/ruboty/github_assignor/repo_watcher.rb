@@ -26,6 +26,10 @@ module Ruboty
             if message && assign && !issue[:assignee]
               # assign this issue
               assignee = @assignor.next
+              while assignee.github_name == issue[:user][:login]
+                assignee = @assignor.next
+              end
+
               log "Assigning this issue to #{assignee}..."
 
               log "Updating assignee of GitHub issue..."
